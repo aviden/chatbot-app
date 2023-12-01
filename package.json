@@ -1,0 +1,15 @@
+{
+  "name": "chatbot_app",
+  "type": "module",
+  "packageManager": "yarn@4.0.2",
+  "scripts": {
+    "start": "npx tsx src/app.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.1",
+    "tsx": "^4.6.1"
+  },
+  "dependencies": {
+    "winston": "^3.11.0"
+  }
+}
