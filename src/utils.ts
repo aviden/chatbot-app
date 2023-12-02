@@ -22,5 +22,5 @@ export function getCallStack(): NodeJS.CallSite[] {
 export function getRelativeFileName(absoluteFileName: string): string {
     const SRC_DIR = '/src/';
     const idx = absoluteFileName.lastIndexOf(SRC_DIR);
-    return idx ? absoluteFileName.slice(idx + SRC_DIR.length) : absoluteFileName;
+    return idx >= 0 ? absoluteFileName.slice(idx + SRC_DIR.length) : absoluteFileName;
 }
