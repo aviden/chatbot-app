@@ -5,12 +5,10 @@ import { getCallStack, getRelativeFileName } from "./utils";
 const timestampAndLevelFormat = format.combine(
     format.timestamp(),
     format.printf(info => `${info.timestamp} ${info.level} ${info.message}`),
-    //winston.format.json()
 )
 const timestampFilenameAndLevelFormat = format.combine(
     format.timestamp(),
     format.printf(info => `${info.timestamp} [${info[0]}] ${info.level}: ${info.message}`),
-    //winston.format.json()
 )
 
 class Logger {
@@ -22,8 +20,9 @@ class Logger {
             level: 'info',
             format: timestampFilenameAndLevelFormat,
             transports: [
-                new winston.transports.File({ filename: 'chatbot-app.log' }),
-                new winston.transports.File({ filename: 'error.log', level: 'error' })
+                new winston.transports.Console({ level: 'info', format: format.printf(info => info.message) }),
+                new winston.transports.File({ filename: 'chatbot-app.log', level: 'info' }),
+                new winston.transports.File({ filename: 'debug.log', level: 'debug' }),
             ]
         });
     }
@@ -50,8 +49,16 @@ class Logger {
         this.logger.info(message, [this.getCallerFileName()]);
     };
 
+    public debug(message: string): void {
+        this.logger.debug(message, [this.getCallerFileName()]);
+    };
+
     public error(message: string): void {
-        this.logger.error(message);
+        this.logger.error(message, [this.getCallerFileName()]);
+    }
+
+    public logException(e: Error): void {
+        this.error(e.stack || e.message)
     }
 }
 

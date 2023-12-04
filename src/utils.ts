@@ -24,3 +24,7 @@ export function getRelativeFileName(absoluteFileName: string): string {
     const idx = absoluteFileName.lastIndexOf(SRC_DIR);
     return idx >= 0 ? absoluteFileName.slice(idx + SRC_DIR.length) : absoluteFileName;
 }
+
+export function arr2str(arr: string[]): string {
+    return '[' + arr.map(s => '"' + s + '"').join(', ') + ']';
+}
