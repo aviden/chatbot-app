@@ -25,6 +25,9 @@ export function getRelativeFileName(absoluteFileName: string): string {
     return idx >= 0 ? absoluteFileName.slice(idx + SRC_DIR.length) : absoluteFileName;
 }
 
+/**
+ * Formats an array of strings into a string
+ */
 export function arr2str(arr: string[]): string {
     return '[' + arr.map(s => '"' + s + '"').join(', ') + ']';
 }

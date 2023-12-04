@@ -1,4 +1,4 @@
-import { getCallStack, getRelativeFileName } from "./utils";
+import { arr2str, getCallStack, getRelativeFileName } from "./utils";
 
 describe(getCallStack, () => { 
     test('Check that callstack is not empty', () => {
@@ -27,5 +27,11 @@ describe(getRelativeFileName, () => {
 
     test('path with multiple src dirs', () => {
         expect(getRelativeFileName('/users/projects/src/favorites/chatbot-app/src/app.ts')).toEqual('app.ts');
+    })
+});
+
+describe(arr2str, () => { 
+    test('default', () => {
+        expect(arr2str(['item 1', 'item 2', ''])).toEqual('["item 1", "item 2", ""]');
     })
 });

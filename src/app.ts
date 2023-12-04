@@ -1,8 +1,8 @@
 import { BotCompanion } from './BotCompanion';
-import { DataQuestionHandlers } from './DataQuestionHandlers';
+import { DataQuestionHandlers } from './QuestionHandlers/DataQuestionHandlers';
 import { logger } from './Logger';
-import { MathQuestionHandlers } from './MathQuestionHandlers';
-import { WordQuestionHandlers } from './WordQuestionHandlers';
+import { MathQuestionHandlers } from './QuestionHandlers/MathQuestionHandlers';
+import { WordQuestionHandlers } from './QuestionHandlers/WordQuestionHandlers';
 
 
 await (async () => {

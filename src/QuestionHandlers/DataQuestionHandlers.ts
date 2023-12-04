@@ -1,4 +1,4 @@
-import { BotCompanion } from "./BotCompanion";
+import { BotCompanion } from "../BotCompanion";
 import fs from "fs";
 import csv from "csv-parser";
 

@@ -1,4 +1,4 @@
-import { BotCompanion } from "./BotCompanion";
+import { BotCompanion } from "../BotCompanion";
 
 
 export class WordQuestionHandlers {
