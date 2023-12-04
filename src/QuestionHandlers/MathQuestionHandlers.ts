@@ -25,8 +25,7 @@ export class MathQuestionHandlers {
             case 'smallest':
                 return Math.min(...numbers).toString();
             case 'average':
-                const sum = numbers.reduce((prev: number, curr: number) => prev + curr, 0);
-                return (sum / numbers.length).toString();
+                return (numbers.reduce((prev: number, curr: number) => prev + curr, 0) / numbers.length).toString();
             default:
                 throw Error(`${this.name}: invalid metric: '${metric}'`);
         }

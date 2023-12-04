@@ -5,7 +5,7 @@ const MOCK_USER_ID          = 'd428f740-9f0c-42c6-aefc-6fb12fa66660';
 const MOCK_CONVERSATION_ID  = 'aa66bdc5-41bb-4efd-aa57-f2cdb27edf69';
 
 const fetchFn = jest.fn(
-    (url: string, options: any) => Promise.resolve({
+    (url: string, options: RequestInit) => Promise.resolve({
         ok: true,
         json: () => {
             const urlSegments = url.split('/');

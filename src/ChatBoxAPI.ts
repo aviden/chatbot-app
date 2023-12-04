@@ -16,15 +16,17 @@ export class ChatBotAPI {
         return `${BASE_URL}/${url}`;
     }
 
-    private async callApi(url: string, method: "GET" | "POST", data?: any): Promise<any> {
-        const requestParams = {
+    private async callApi(url: string, method: "GET" | "POST", data?: object):
+        Promise<any>    /* eslint-disable-line @typescript-eslint/no-explicit-any */
+    {
+        const requestParams: RequestInit = {
             method: method,
             headers: {
                 'content-type': 'application/json',
             }
         };
         if (data) {
-            (<any>requestParams)["body"] = JSON.stringify(data);
+            requestParams.body = JSON.stringify(data);
         }
         logger.debug(`FETCH '${this.url(url)}', ${JSON.stringify(requestParams, null, 4)}`);
         const response = await fetch(this.url(url), requestParams);

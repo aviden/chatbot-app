@@ -1,5 +1,4 @@
 import { BotCompanion } from './BotCompanion';
-import * as ChatBoxAPIModule from "./ChatBoxAPI";
 
 const QUESTIONS = [
     {
@@ -18,7 +17,7 @@ let questionNo = -1;
 jest.mock('./ChatBoxAPI', () => ({
     __esModule: true,
     ChatBotAPI: jest.fn(() => ({
-        register: (name: string, email: string) => Promise.resolve(),
+        register: () => Promise.resolve(),
         beginConversation: () => Promise.resolve(),
         readNewMessages: () => {
             questionNo = Math.min(questionNo + 1, QUESTIONS.length - 1);

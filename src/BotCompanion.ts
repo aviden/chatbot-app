@@ -8,16 +8,16 @@ export type QuestionHandler = (args: string[]) => string;
 type HandlerInfo = {
     selector: RegExp,
     handler: QuestionHandler,
-    this_?: Object
+    this_?: object
 };
 
-export class UnknownQuestionError extends Error { };
+export class UnknownQuestionError extends Error { }
 
 export class BotCompanion {
 
     private static handlers: HandlerInfo[] = [];
 
-    public static registerQuestionHandler(selector: RegExp, handler: QuestionHandler, this_?: Object) {
+    public static registerQuestionHandler(selector: RegExp, handler: QuestionHandler, this_?: object) {
         this.handlers.push({ selector, handler, this_ });
     }
 
@@ -58,7 +58,7 @@ export class BotCompanion {
     private findHandler(messages: string[]): {
         handler: QuestionHandler,
         args: string[]
-        this_?: Object
+        this_?: object
     } {
         const message = messages.join('\r\n');
         let handlerArgs: string[];

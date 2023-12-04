@@ -20,7 +20,7 @@ await (async () => {
 
         WordQuestionHandlers.register();
         MathQuestionHandlers.register();
-        const _ = new DataQuestionHandlers();
+        const _ = new DataQuestionHandlers();   /* eslint-disable-line @typescript-eslint/no-unused-vars */
     
         const companion = new BotCompanion()
         await companion.beginConversation("Denys Avilov", "aviloff@gmail.com");

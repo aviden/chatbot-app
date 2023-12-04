@@ -2,10 +2,6 @@ import * as winston from "winston";
 import { format } from "logform";
 import { getCallStack, getRelativeFileName } from "./utils";
 
-const timestampAndLevelFormat = format.combine(
-    format.timestamp(),
-    format.printf(info => `${info.timestamp} ${info.level} ${info.message}`),
-)
 const timestampFilenameAndLevelFormat = format.combine(
     format.timestamp(),
     format.printf(info => `${info.timestamp} [${info[0]}] ${info.level}: ${info.message}`),
@@ -33,7 +29,7 @@ class Logger {
         if (!callStack.length)
             return "";
         let callerInfo = "";
-        let currentFile = callStack.shift()!.getFileName() || "";
+        const currentFile = callStack.shift()!.getFileName() || "";
 
         while (callStack.length) {
             const callerFile = callStack.shift()!.getFileName() || "";
@@ -47,11 +43,11 @@ class Logger {
       
     public info(message: string): void {
         this.logger.info(message, [this.getCallerFileName()]);
-    };
+    }
 
     public debug(message: string): void {
         this.logger.debug(message, [this.getCallerFileName()]);
-    };
+    }
 
     public error(message: string): void {
         this.logger.error(message, [this.getCallerFileName()]);
