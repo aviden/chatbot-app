@@ -23,7 +23,7 @@ await (async () => {
         const _ = new DataQuestionHandlers();
     
         const companion = new BotCompanion()
-        await companion.beginConversation("Vasyl Pupkin", "vasyl.pupkin@fakemail.com");
+        await companion.beginConversation("Denys Avilov", "aviloff@gmail.com");
         while (!companion.done) {
             await companion.talkToBot();
             logger.info('');
