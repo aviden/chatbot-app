@@ -20,7 +20,7 @@ const fetchFn = jest.fn(
                             if (options['method'] === 'GET') {
                                 return Promise.resolve({
                                     messages: [{
-                                        'text': 'ChatBot test message'
+                                        text: 'ChatBot test message'
                                     }]
                                 })
                             } if (options['method'] === 'POST') {

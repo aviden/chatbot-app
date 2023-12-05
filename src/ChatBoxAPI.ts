@@ -1,14 +1,42 @@
 import { logger } from "./Logger";
+import Ajv, { JSONSchemaType } from "ajv";
 
 const BASE_URL                      = "https://code-challenge.us1.sandbox-rivaltech.io";
 const CHALLENGE_REGISTER_URL        = "challenge-register";
 const CHALLENGE_CONVERSATION_URL    = 'challenge-conversation'
 const CHALLENGE_BEHAVIOUR_URL       = 'challenge-behaviour';
 
+interface GetChallengeBehaviorResponse {
+    messages: {
+        text: string
+    }[]
+}
+
+const GetChallengeBehaviorSchema: JSONSchemaType<GetChallengeBehaviorResponse> = {
+    type: "object",
+    properties: {
+        messages: {
+            type: "array",
+            items: {
+                type: "object",
+                properties: {
+                    text: {
+                        type: "string"
+                    }
+                },
+                required: ["text"],
+                additionalProperties: false
+            }
+        }
+    },
+    required: ["messages"]
+}
+
 export class ChatBotAPI {
     
     private user_id: string = "";
     private conversation_id: string = "";
+    private ajv = new Ajv();
 
     constructor() {}
 
@@ -62,7 +90,10 @@ export class ChatBotAPI {
     public async readNewMessages(): Promise<string[]> {
         logger.debug(`Reading messages from the bot...`);
         const response = await this.callApi(`${CHALLENGE_BEHAVIOUR_URL}/${this.conversation_id}`, "GET");
-        if (!Object.hasOwn(response, "messages")) {
+        if (!this.ajv.validate(GetChallengeBehaviorSchema, response)) {
+            throw new Error(`${this.readNewMessages.name}: invalid API response format.`);
+        }
+        /*if (!Object.hasOwn(response, "messages")) {
             throw new Error("Unknown response format");
         }
         const messages = response["messages"];
@@ -74,7 +105,8 @@ export class ChatBotAPI {
                 throw new Error("Unknown response format");
             }
             return String(item["text"]);
-        });
+        });*/
+        const result = (response as GetChallengeBehaviorResponse).messages.map(item => item.text);
         logger.info(`Received messages from the bot:`);
         result.forEach(s => logger.info(`    - ${s}`));
         return result;
