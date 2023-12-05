@@ -6,6 +6,30 @@ const CHALLENGE_REGISTER_URL        = "challenge-register";
 const CHALLENGE_CONVERSATION_URL    = 'challenge-conversation'
 const CHALLENGE_BEHAVIOUR_URL       = 'challenge-behaviour';
 
+interface ChallengeRegisterResponse {
+    user_id: string;
+}
+
+const ChallengeRegisterSchema: JSONSchemaType<ChallengeRegisterResponse> = {
+    type: "object",
+    properties: {
+        "user_id": { type: "string" }
+    },
+    required: ["user_id"]
+}
+
+interface ChallengeConversationResponse {
+    conversation_id: string;
+}
+
+const ChallengeConversationSchema: JSONSchemaType<ChallengeConversationResponse> = {
+    type: "object",
+    properties: {
+        conversation_id: { type: "string" }
+    },
+    required: ["conversation_id"]
+}
+
 interface GetChallengeBehaviorResponse {
     messages: {
         text: string
@@ -32,6 +56,18 @@ const GetChallengeBehaviorSchema: JSONSchemaType<GetChallengeBehaviorResponse> =
     required: ["messages"]
 }
 
+interface PostChallengeBehaviorResponse {
+    correct: boolean;
+}
+
+const PostChallengeBehaviorSchema: JSONSchemaType<PostChallengeBehaviorResponse> = {
+    type: "object",
+    properties: {
+        correct: { type: "boolean" }
+    },
+    required: ["correct"]
+}
+
 export class ChatBotAPI {
     
     private user_id: string = "";
@@ -44,9 +80,7 @@ export class ChatBotAPI {
         return `${BASE_URL}/${url}`;
     }
 
-    private async callApi(url: string, method: "GET" | "POST", data?: object):
-        Promise<any>    /* eslint-disable-line @typescript-eslint/no-explicit-any */
-    {
+    private async callApi<T>(url: string, method: "GET" | "POST", data?: object, schema?: JSONSchemaType<T>): Promise<T> {
         const requestParams: RequestInit = {
             method: method,
             headers: {
@@ -62,7 +96,10 @@ export class ChatBotAPI {
             logger.debug(`FETCH status: ${response.status} - ${response.statusText}`);
             const responseData = await response.json();
             logger.debug(`FETCH response: ${JSON.stringify(responseData)}`);
-            return Promise.resolve(responseData);
+            if (schema && !this.ajv.validate(schema, responseData)) {
+                throw new Error(`${this.callApi.name}: invalid API response format.`);
+            }
+            return Promise.resolve(responseData as T);
         } else {
             const msg = `Error calling '${url}' API: ${response.status} - ${response.statusText}`;
             logger.error(msg);
@@ -71,42 +108,27 @@ export class ChatBotAPI {
     }
     
     public async register(name: string, email: string) {
-        const { user_id } = await this.callApi(CHALLENGE_REGISTER_URL, "POST", {
+        const { user_id } = await this.callApi<ChallengeRegisterResponse>(CHALLENGE_REGISTER_URL, "POST", {
             name: name,
             email: email
-        });
+        }, ChallengeRegisterSchema);
         this.user_id = user_id;
         logger.info(`Successfully registered with the chatbot, user_id = ${user_id}`)
     }
 
     public async beginConversation() {
-        const { conversation_id } = await this.callApi(CHALLENGE_CONVERSATION_URL, "POST", {
+        const { conversation_id } = await this.callApi<ChallengeConversationResponse>(CHALLENGE_CONVERSATION_URL, "POST", {
             user_id: this.user_id
-        });
+        }, ChallengeConversationSchema);
         this.conversation_id = conversation_id;
         logger.info(`Conversation started, conversation_id = ${conversation_id}`)
     }
 
     public async readNewMessages(): Promise<string[]> {
         logger.debug(`Reading messages from the bot...`);
-        const response = await this.callApi(`${CHALLENGE_BEHAVIOUR_URL}/${this.conversation_id}`, "GET");
-        if (!this.ajv.validate(GetChallengeBehaviorSchema, response)) {
-            throw new Error(`${this.readNewMessages.name}: invalid API response format.`);
-        }
-        /*if (!Object.hasOwn(response, "messages")) {
-            throw new Error("Unknown response format");
-        }
-        const messages = response["messages"];
-        if (!Array.isArray(messages)) {
-            throw new Error("Unknown response format");
-        }
-        const result = messages.map(item => {
-            if (!Object.hasOwn(item, "text")) {
-                throw new Error("Unknown response format");
-            }
-            return String(item["text"]);
-        });*/
-        const result = (response as GetChallengeBehaviorResponse).messages.map(item => item.text);
+        const { messages } = await this.callApi<GetChallengeBehaviorResponse>(
+            `${CHALLENGE_BEHAVIOUR_URL}/${this.conversation_id}`, "GET", undefined, GetChallengeBehaviorSchema);
+        const result = messages.map(item => item.text);
         logger.info(`Received messages from the bot:`);
         result.forEach(s => logger.info(`    - ${s}`));
         return result;
@@ -114,13 +136,9 @@ export class ChatBotAPI {
 
     public async postResponse(reponse: string): Promise<boolean> {
         logger.info(`Sending a response: ${reponse}`);
-        const response = await this.callApi(`${CHALLENGE_BEHAVIOUR_URL}/${this.conversation_id}`, "POST", {
+        const { correct } = await this.callApi(`${CHALLENGE_BEHAVIOUR_URL}/${this.conversation_id}`, "POST", {
             content: reponse
-        });
-        if (!Object.hasOwn(response, "correct")) {
-            throw new Error("Unknown response format");
-        }
-        const correct = Boolean(response["correct"]);
+        }, PostChallengeBehaviorSchema);
         if (correct) {
             logger.debug(`correct!`)
         } else {
